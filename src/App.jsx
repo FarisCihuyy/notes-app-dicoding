@@ -11,6 +11,8 @@ import { notes as data } from "./utils/local-data";
 const App = () => {
   const [notes, setNotes] = useState(data || []);
 
+  console.log(import.meta.env.VITE_BASE_URL);
+
   return (
     <Routes>
       <Route element={<MainLayout />}>
