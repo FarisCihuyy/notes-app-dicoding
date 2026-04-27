@@ -1,11 +1,15 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import { addNote } from "../../utils";
+import { createNote } from "../../services/notes";
+import { useAuth } from "../../contexts/AuthContext";
 
 const NewNote = () => {
-  const handleSubmit = (e) => {
+  const { token } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
@@ -27,10 +31,16 @@ const NewNote = () => {
       return;
     }
 
-    addNote(title, body);
+    const res = await createNote(token, { title, body });
+
+    if (res.error) {
+      alert(res.message);
+      return;
+    }
 
     alert("Catatan berhasil disimpan!");
     e.target.reset();
+    navigate("/");
   };
 
   return (
@@ -57,7 +67,7 @@ const NewNote = () => {
           rows="10"
         />
 
-        <Button label="Simpan" type="submit" className="w-full" />
+        <Button label="Tambahkan" type="submit" className="w-full" />
       </form>
     </main>
   );

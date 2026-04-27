@@ -3,25 +3,54 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Card from "../components/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { getFilteredNotes, toggleArchiveNote } from "../utils";
+import { archiveNote, deleteNote } from "../services/notes";
+import { useAuth } from "../contexts/AuthContext";
+import { useLoading } from "./hooks/useLoading";
+// import { toggleArchiveNote } from "../utils";
 
-const NotesPage = ({ archived, notes, setNotes }) => {
+const NotesPage = ({ notes, refreshNotes }) => {
+  const { token } = useAuth();
+  const { showLoading, hideLoading } = useLoading();
   const [searchParams, setSearchParams] = useSearchParams();
   const [keywords, setKeywords] = useState("");
   const navigate = useNavigate();
 
-  const filteredNotes = getFilteredNotes(notes, keywords, archived);
+  // const filteredNotes = getFilteredNotes(notes, keywords, archived);
 
   const handleSearchNote = (e) => {
     setSearchParams({ keywords: e.target.value });
   };
 
-  const handleToggle = (id) => {
-    setNotes((prev) => toggleArchiveNote(id, prev));
+  const handleToggle = async (id) => {
+    showLoading();
+    try {
+      const res = await archiveNote(token, id);
+      if (res.error) {
+        alert(res.message);
+        return;
+      }
+
+      alert(res.message || "Catatan berhasil disimpan!");
+      await refreshNotes();
+    } finally {
+      hideLoading();
+    }
   };
 
-  const handleDelete = (id) => {
-    setNotes((prev) => prev.filter((note) => note.id !== id));
+  const handleDelete = async (id) => {
+    showLoading();
+    try {
+      const res = await deleteNote(token, id);
+      if (res.error) {
+        alert(res.message);
+        return;
+      }
+
+      alert(res.message || "Catatan berhasil dihapus!");
+      await refreshNotes();
+    } finally {
+      hideLoading();
+    }
   };
 
   useEffect(() => {
@@ -51,8 +80,8 @@ const NotesPage = ({ archived, notes, setNotes }) => {
       </div>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {filteredNotes.length > 0 ? (
-          filteredNotes.map((note) => (
+        {notes.length > 0 ? (
+          notes.map((note) => (
             <Card key={note.id}>
               <Card.Header
                 id={note.id}

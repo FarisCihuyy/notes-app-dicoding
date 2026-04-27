@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Card from "../../components/Card";
 import Label from "../../components/ui/Label";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 import { login } from "../../services/auth";
+import { useLoading } from "../../components/hooks/useLoading";
+import { useAuth } from "../../contexts/AuthContext";
+import { getUserProfile } from "../../services/user";
 
 const Login = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location.state?.from?.pathname || "/";
+  const { login: authData } = useAuth();
+  const { showLoading, hideLoading } = useLoading();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,12 +31,27 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
+    showLoading();
     e.preventDefault();
-    const res = await login({ ...formData });
+    try {
+      const res = await login({ ...formData });
 
-    if (res.error) {
-      alert(res.message);
-      return;
+      if (res.error) {
+        alert(res.message);
+        return;
+      }
+
+      alert(res.message || "Login berhasil");
+
+      // console.log(res.data.accessToken);
+
+      const user = await getUserProfile(res.data.accessToken);
+      console.log(user.data);
+
+      authData(user.data, res.data.accessToken);
+      navigate(from);
+    } finally {
+      hideLoading();
     }
   };
 
@@ -38,7 +63,7 @@ const Login = () => {
           <p className="text-sm">Lorem ipsum dolor sit amet</p>
         </header>
 
-        <form onSubmit={handleSubmit} className="w-full min-w-72 space-y-4">
+        <form onSubmit={handleSubmit} className="w-full min-w-86 space-y-4">
           <div className="flex flex-col">
             <Label title="Email" required />
 
@@ -65,6 +90,12 @@ const Login = () => {
           </div>
           <Button label="Login" type="submit" className="w-full mt-4" />
         </form>
+        <span className="w-full text-center text-xs">
+          Don't have an account?{" "}
+          <Link to="/register" className="text-indigo-600 underline">
+            Signup
+          </Link>
+        </span>
       </Card>
     </section>
   );
