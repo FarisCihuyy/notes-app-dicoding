@@ -2,17 +2,28 @@
 
 @import "tailwindcss";
 
-@theme {
-  --font-dmSans: "DM Sans", sans-serif;
-
+:root {
   --color-primary: #361736;
   --color-background: #fbe5ff;
   --color-foreground: #e96bff;
   --color-accent: #c700eb;
 }
 
+.dark {
+  --color-primary: #eeefe9;
+  --color-background: #361736;
+}
+
+@theme {
+  --font-dmSans: "DM Sans", sans-serif;
+  --color-primary: var(--color-primary);
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-accent: var(--color-accent);
+}
+
 body {
-  @apply font-dmSans bg-background;
+  @apply font-dmSans bg-background transition-all;
 }
 
 .shadow {

@@ -1,8 +1,10 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "./ui/Button";
 import { useAuth } from "../contexts/AuthContext";
+import { useTheme } from "./hooks/useTheme";
 
 const Navbar = () => {
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user, logout } = useAuth();
@@ -23,9 +25,16 @@ const Navbar = () => {
         Note App
       </Link>
       <div className="flex gap-x-4 items-center">
+        <button
+          className="rounded-md p-1 transition-colors cursor-pointer hover:bg-accent/10"
+          onClick={toggleTheme}
+        >
+          {theme === "light" ? "🌑" : "☀️"}
+        </button>
+
         <Link
           to={pathname === "/" ? "/archives" : "/"}
-          className=" font-medium shadow py-1 px-4 text-sm"
+          className="font-medium hover:underline"
         >
           {pathname === "/" ? "Arsip" : "Catatan Aktif"}
         </Link>

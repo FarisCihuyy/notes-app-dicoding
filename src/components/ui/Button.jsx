@@ -18,7 +18,7 @@ const Button = ({
         className,
         {
           "bg-accent text-white hover:bg-accent/70": variant === "solid",
-          "bg-transparent text-primary hover:bg-accent/10":
+          "bg-transparent text-[#361736] hover:bg-accent/10":
             variant === "outline",
           "text-xs py-1.5 px-3": size === "sm",
           "text-sm py-2 px-4": size === "md",

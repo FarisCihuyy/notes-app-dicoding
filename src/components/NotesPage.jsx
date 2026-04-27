@@ -3,38 +3,29 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import Card from "../components/Card";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { archiveNote, deleteNote } from "../services/notes";
+import { deleteNote } from "../services/notes";
 import { useAuth } from "../contexts/AuthContext";
 import { useLoading } from "./hooks/useLoading";
 // import { toggleArchiveNote } from "../utils";
 
-const NotesPage = ({ notes, refreshNotes }) => {
+const NotesPage = ({ notes, refreshNotes, toggleArchiveNote }) => {
   const { token } = useAuth();
   const { showLoading, hideLoading } = useLoading();
   const [searchParams, setSearchParams] = useSearchParams();
   const [keywords, setKeywords] = useState("");
   const navigate = useNavigate();
 
-  // const filteredNotes = getFilteredNotes(notes, keywords, archived);
-
+  const filteredNotes = notes.filter(
+    (note) =>
+      note.title.toLowerCase().includes(keywords.toLowerCase()) ||
+      note.body.toLowerCase().includes(keywords.toLowerCase()),
+  );
   const handleSearchNote = (e) => {
     setSearchParams({ keywords: e.target.value });
   };
 
   const handleToggle = async (id) => {
-    showLoading();
-    try {
-      const res = await archiveNote(token, id);
-      if (res.error) {
-        alert(res.message);
-        return;
-      }
-
-      alert(res.message || "Catatan berhasil disimpan!");
-      await refreshNotes();
-    } finally {
-      hideLoading();
-    }
+    toggleArchiveNote(id);
   };
 
   const handleDelete = async (id) => {
@@ -80,8 +71,8 @@ const NotesPage = ({ notes, refreshNotes }) => {
       </div>
 
       <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        {notes.length > 0 ? (
-          notes.map((note) => (
+        {filteredNotes.length > 0 ? (
+          filteredNotes.map((note) => (
             <Card key={note.id}>
               <Card.Header
                 id={note.id}
