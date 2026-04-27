@@ -14,8 +14,8 @@ const Button = ({
       type={type}
       onClick={handleClick}
       className={clsx(
-        className,
         "shadow font-semibold transition-colors cursor-pointer",
+        className,
         {
           "bg-accent text-white hover:bg-accent/70": variant === "solid",
           "bg-transparent text-primary hover:bg-accent/10":

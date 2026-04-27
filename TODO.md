@@ -15,7 +15,7 @@ Oke, ini aku buatin `todo.md` yang rapi dan bisa langsung kamu pakai sebagai che
   - [ ] Arsip / Unarsip catatan (opsional)
   - [ ] Ambil daftar arsip (opsional)
 
----
+---git config --global credential.helper
 
 ## ✅ Kriteria Utama 2: Registrasi & Autentikasi
 
